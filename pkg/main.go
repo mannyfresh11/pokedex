@@ -3,8 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"mannyfresh11/pokedex/cmd"
 	"os"
+
+	"github.com/mannyfresh11/pokedex/cmd"
 )
 
 func main() {

@@ -27,11 +27,11 @@ func Commands() map[string]cliCommand {
 			description: "Display a help message",
 			callback:    CommandHelp,
 		},
-		// "map": {
-		// 	name:        "map",
-		// 	description: "Display the locations of the next Pokemon world list.",
-		// 	callback:    CommandMap,
-		// },
+		"map": {
+			name:        "map",
+			description: "Display the locations of the next Pokemon world list.",
+			callback:    CommandMap,
+		},
 		"mapb": {
 			name:        "mapb",
 			description: "Display the locations of the previous Pokemon world list.",
