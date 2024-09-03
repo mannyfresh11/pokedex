@@ -10,7 +10,7 @@ import (
 type CliCommand struct {
 	Name        string
 	Description string
-	Callback    func(conf *config) error
+	Callback    func(*config, ...string) error
 }
 
 func startREPL(conf *config) {
@@ -25,18 +25,36 @@ func startREPL(conf *config) {
 			continue
 		}
 
+		args := []string{}
+		if len(text) > 1 {
+			args = text[1:]
+		}
+
 		availableCmd := Commands()
 		command, ok := availableCmd[text[0]]
 		if !ok {
 			fmt.Println("Command does not exist.")
 			continue
 		}
-		command.Callback(conf)
+		err := command.Callback(conf, args...)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 func Commands() map[string]CliCommand {
 	return map[string]CliCommand{
+		"exit": {
+			Name:        "exit",
+			Description: "Exit the pokedex",
+			Callback:    commandExit,
+		},
+		"explore": {
+			Name:        "explore {location _name}",
+			Description: "Explore pokemons in a specific zone",
+			Callback:    commandExplore,
+		},
 		"help": {
 			Name:        "help",
 			Description: "Display a help message",
@@ -51,11 +69,6 @@ func Commands() map[string]CliCommand {
 			Name:        "mapb",
 			Description: "Display the locations of the previous Pokemon world list.",
 			Callback:    commandMapb,
-		},
-		"exit": {
-			Name:        "exit",
-			Description: "Exit the pokedex",
-			Callback:    commandExit,
 		},
 	}
 }

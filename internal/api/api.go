@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -14,16 +15,6 @@ const baseURL = "https://pokeapi.co/api/v2"
 type Client struct {
 	cache      pokicache.Cache
 	httpClient http.Client
-}
-
-type LocationArea struct {
-	Count    int     `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
 }
 
 func NewClient(cacheInterval time.Duration) Client {
@@ -45,6 +36,7 @@ func (c *Client) GetLocation(url *string, cacheInterval time.Duration) (Location
 
 	data, ok := c.cache.Get(fullPath)
 	if ok {
+		fmt.Println("cache hit")
 		LA := LocationArea{}
 
 		err := json.Unmarshal(data, &LA)
@@ -54,6 +46,7 @@ func (c *Client) GetLocation(url *string, cacheInterval time.Duration) (Location
 
 		return LA, nil
 	}
+	fmt.Println("cache miss")
 
 	resp, err := c.httpClient.Get(fullPath)
 	if err != nil {
@@ -77,4 +70,90 @@ func (c *Client) GetLocation(url *string, cacheInterval time.Duration) (Location
 	c.cache.Add(fullPath, data)
 
 	return LA, nil
+}
+
+func (c *Client) GetAreaInfo(areaName string, cacheInterval time.Duration) (LocationAreaName, error) {
+
+	endpoint := "/location-area/" + areaName
+	fullPath := baseURL + endpoint
+
+	data, ok := c.cache.Get(fullPath)
+	if ok {
+		fmt.Println("cache hit")
+		LA := LocationAreaName{}
+
+		err := json.Unmarshal(data, &LA)
+		if err != nil {
+			return LocationAreaName{}, err
+		}
+
+		return LA, nil
+	}
+	fmt.Println("cache miss")
+
+	resp, err := c.httpClient.Get(fullPath)
+	if err != nil {
+		return LocationAreaName{}, err
+	}
+
+	defer resp.Body.Close()
+
+	data, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return LocationAreaName{}, err
+	}
+
+	LA := LocationAreaName{}
+
+	err = json.Unmarshal(data, &LA)
+	if err != nil {
+		return LocationAreaName{}, err
+	}
+
+	c.cache.Add(fullPath, data)
+
+	return LA, nil
+}
+
+func (c *Client) GetPokemon(pokemon string, cacheInterval time.Duration) (Pokemon, error) {
+
+	endpoint := "/pokemon/" + pokemon
+	fullPath := baseURL + endpoint
+
+	data, ok := c.cache.Get(fullPath)
+	if ok {
+		fmt.Println("cache hit")
+		pkm := Pokemon{}
+
+		err := json.Unmarshal(data, &pkm)
+		if err != nil {
+			return Pokemon{}, err
+		}
+
+		return pkm, nil
+	}
+	fmt.Println("cache miss")
+
+	resp, err := c.httpClient.Get(fullPath)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	defer resp.Body.Close()
+
+	data, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	pkm := Pokemon{}
+
+	err = json.Unmarshal(data, &pkm)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	c.cache.Add(fullPath, data)
+
+	return pkm, nil
 }

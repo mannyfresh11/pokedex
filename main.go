@@ -7,9 +7,10 @@ import (
 )
 
 type config struct {
-	client  api.Client
-	NextURL *string
-	PrevURL *string
+	client   api.Client
+	NextURL  *string
+	PrevURL  *string
+	areaName *string
 }
 
 func main() {
