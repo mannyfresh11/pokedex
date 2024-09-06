@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type CliCommand struct {
+type cliCommand struct {
 	Name        string
 	Description string
 	Callback    func(*config, ...string) error
@@ -38,13 +38,18 @@ func startREPL(conf *config) {
 		}
 		err := command.Callback(conf, args...)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Print(err)
 		}
 	}
 }
 
-func Commands() map[string]CliCommand {
-	return map[string]CliCommand{
+func Commands() map[string]cliCommand {
+	return map[string]cliCommand{
+		"catch": {
+			Name:        "catch {pokemon_name}",
+			Description: "Attemt to catch a pokemon and add it to your pokedex",
+			Callback:    commandCatch,
+		},
 		"exit": {
 			Name:        "exit",
 			Description: "Exit the pokedex",
@@ -60,6 +65,11 @@ func Commands() map[string]CliCommand {
 			Description: "Display a help message",
 			Callback:    commandHelp,
 		},
+		"inspect": {
+			Name:        "inspect {pokemon_name}",
+			Description: "inspect pokemon caught into pokedex",
+			Callback:    commandInspect,
+		},
 		"map": {
 			Name:        "map",
 			Description: "Display the locations of the next Pokemon world list.",
@@ -69,6 +79,11 @@ func Commands() map[string]CliCommand {
 			Name:        "mapb",
 			Description: "Display the locations of the previous Pokemon world list.",
 			Callback:    commandMapb,
+		},
+		"pokedex": {
+			Name:        "pokedex",
+			Description: "Display all the pokemons caught",
+			Callback:    commandPokedex,
 		},
 	}
 }

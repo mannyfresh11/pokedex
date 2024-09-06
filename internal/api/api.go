@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -36,7 +35,6 @@ func (c *Client) GetLocation(url *string, cacheInterval time.Duration) (Location
 
 	data, ok := c.cache.Get(fullPath)
 	if ok {
-		fmt.Println("cache hit")
 		LA := LocationArea{}
 
 		err := json.Unmarshal(data, &LA)
@@ -46,7 +44,6 @@ func (c *Client) GetLocation(url *string, cacheInterval time.Duration) (Location
 
 		return LA, nil
 	}
-	fmt.Println("cache miss")
 
 	resp, err := c.httpClient.Get(fullPath)
 	if err != nil {
@@ -79,7 +76,6 @@ func (c *Client) GetAreaInfo(areaName string, cacheInterval time.Duration) (Loca
 
 	data, ok := c.cache.Get(fullPath)
 	if ok {
-		fmt.Println("cache hit")
 		LA := LocationAreaName{}
 
 		err := json.Unmarshal(data, &LA)
@@ -89,7 +85,6 @@ func (c *Client) GetAreaInfo(areaName string, cacheInterval time.Duration) (Loca
 
 		return LA, nil
 	}
-	fmt.Println("cache miss")
 
 	resp, err := c.httpClient.Get(fullPath)
 	if err != nil {
@@ -122,7 +117,6 @@ func (c *Client) GetPokemon(pokemon string, cacheInterval time.Duration) (Pokemo
 
 	data, ok := c.cache.Get(fullPath)
 	if ok {
-		fmt.Println("cache hit")
 		pkm := Pokemon{}
 
 		err := json.Unmarshal(data, &pkm)
@@ -132,7 +126,6 @@ func (c *Client) GetPokemon(pokemon string, cacheInterval time.Duration) (Pokemo
 
 		return pkm, nil
 	}
-	fmt.Println("cache miss")
 
 	resp, err := c.httpClient.Get(fullPath)
 	if err != nil {
